@@ -14,7 +14,16 @@ aucune connexion requise. Fonctionne sur mobile.
 | 🌙 **Le Défi du Jour** | 5 questions tirées par la date — les mêmes pour tout le monde, une seule tentative par jour. |
 | ⏳ **Contre-la-Montre** | 90 secondes, un maximum de bonnes réponses, la difficulté grimpe. |
 | 💀 **Mort Subite** | Une erreur = fin de partie. Les points s'envolent avec les paliers. |
+| 💭 **La Pensine** | Replonge dans chaque tome, un souvenir à la fois. 8 questions par livre ; restaure le souvenir en argent (6/8) ou grave-le en Vif d'or (8/8). Les sept médailles se conservent. |
+| 🐉 **Le Coffre de Gringotts** | Quitte ou double : chaque bonne réponse **double** ton butin. Encaisse quand tu veux… mais une seule erreur et le dragon garde tout. |
 | 📚 **La Bibliothèque** | Révisions libres par niveau, sans enjeu, avec les sources. |
+
+Et une section à part, **🕯️ La Réserve** (la section interdite) : 16 fiches
+de *lore étendu* vérifiées et sourcées (Pottermore, interviews de J.K.
+Rowling) et 12 *théories de fans* réelles et célèbres, chacune avec son
+origine et son statut (saluée par J.K.R. / démentie / jamais tranchée).
+C'est le seul endroit de l'appli qui sort du canon des romans — et c'est
+assumé.
 
 ## ⚡ La progression
 
@@ -27,9 +36,10 @@ aucune connexion requise. Fonctionne sur mobile.
 
 ## 📖 Les questions : 5 niveaux de difficulté
 
-97 questions, de « Dans quelle rue habitent les Dursley ? » jusqu'à
+**489 questions**, de « Dans quelle rue habitent les Dursley ? » jusqu'à
 « Depuis quand la famille Ollivander fabrique-t-elle des baguettes ? »
-(382 av. J.-C., évidemment).
+(382 av. J.-C., évidemment). Les sept tomes sont couverts, du placard sous
+l'escalier jusqu'à l'épilogue.
 
 **Chaque question cite sa source — tome et chapitre — affichée après chaque
 réponse.** Le périmètre est le canon strict des 7 romans, dans la traduction

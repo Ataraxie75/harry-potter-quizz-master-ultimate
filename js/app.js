@@ -51,9 +51,10 @@ const defaultState = () => ({
   sound: true,
   stats: {
     answered: 0, correct: 0, bestStreak: 0,
-    timedBest: 0, suddenBest: 0,
+    timedBest: 0, suddenBest: 0, gringottsBest: 0,
     dailyPerfects: 0, ascensionWins: 0, t5correct: 0,
   },
+  pensine: {},        // { "1": "silver"|"gold", ... } souvenirs restaurés
   daysPlayed: [],     // ["2026-07-05", ...]
   dailyDone: null,    // clé du jour déjà joué
   questsDone: [],     // ids de quêtes accomplies
@@ -114,6 +115,12 @@ const QUESTS = [
     prog: s => [s.daysPlayed.length, 7] },
   { id: "houseglory", icon: "🏆", name: "Gloire de ta Maison", desc: "Apporte 2 000 points à ta maison.", reward: 250,
     prog: s => [s.cupPoints, 2000] },
+  { id: "pensine", icon: "💭", name: "Gardienne des souvenirs", desc: "Restaure les sept souvenirs de la Pensine.", reward: 400,
+    prog: s => [Object.keys(s.pensine || {}).length, 7] },
+  { id: "goldmemory", icon: "✨", name: "Souvenir de Vif d'or", desc: "Restaure un souvenir sans la moindre erreur (8/8).", reward: 150,
+    prog: s => [Object.values(s.pensine || {}).filter(v => v === "gold").length, 1] },
+  { id: "heist", icon: "🐉", name: "Le casse du siècle", desc: "Repars de Gringotts avec un butin d'au moins 800 points.", reward: 300,
+    prog: s => [Math.min(s.stats.gringottsBest, 800), 800] },
 ];
 
 /* Vérifie les quêtes ; renvoie les nouvelles accomplies */
@@ -187,6 +194,7 @@ $$("[data-nav]").forEach(b => b.addEventListener("click", () => {
   if (to === "quests") renderQuests();
   if (to === "cup") renderCup();
   if (to === "home") renderHome();
+  if (to === "reserve") renderReserve();
   show(to);
 }));
 
@@ -244,6 +252,9 @@ function renderHome() {
   }
   $("#timed-best").textContent = "Record : " + (state.stats.timedBest || "—");
   $("#sudden-best").textContent = "Record : " + (state.stats.suddenBest || "—");
+  $("#gringotts-best").textContent = "Record : " + (state.stats.gringottsBest ? state.stats.gringottsBest + " pts" : "—");
+  const restored = Object.keys(state.pensine || {}).length;
+  $("#pensine-badge").textContent = restored >= 7 ? "🏅 Mémoire complète !" : `${restored}/7 souvenirs`;
   const dailyPlayed = state.dailyDone === todayKey();
   $("#daily-badge").textContent = dailyPlayed ? "Déjà joué aujourd'hui ✓" : "Nouveau défi ✦";
   $("#mode-daily").classList.toggle("done-today", dailyPlayed);
@@ -253,6 +264,25 @@ function renderHome() {
 $("#btn-sound").addEventListener("click", () => {
   state.sound = !state.sound; save(); renderHome();
 });
+
+/* ---------------- Les sept tomes (mode Pensine) ---------------- */
+
+const TOMES = [
+  null,
+  { title: "À l'école des sorciers", tag: "Un placard sous l'escalier, et des lettres que personne ne veut te laisser lire…", icon: "⚡" },
+  { title: "La Chambre des Secrets", tag: "Quelqu'un a écrit sur le mur. Et la voix dans les murs, personne d'autre ne l'entend.", icon: "🐍" },
+  { title: "Le Prisonnier d'Azkaban", tag: "Il s'est échappé. Et on dit qu'il te cherche.", icon: "🌕" },
+  { title: "La Coupe de Feu", tag: "Le calice crache un quatrième nom. Le tien.", icon: "🏆" },
+  { title: "L'Ordre du Phénix", tag: "Le Ministère nie tout. Alors une armée s'entraîne en secret.", icon: "🐦‍🔥" },
+  { title: "Le Prince de Sang-Mêlé", tag: "Un vieux manuel annoté, une tour, un éclair vert.", icon: "📖" },
+  { title: "Les Reliques de la Mort", tag: "Trois frères, trois objets, une dernière chasse.", icon: "△" },
+];
+
+function tomeOf(q) {
+  if (q.src.includes("pilogue")) return 7;
+  const m = q.src.match(/Tome (\d)/);
+  return m ? Number(m[1]) : 0;
+}
 
 /* ---------------- Construction des parties ---------------- */
 
@@ -291,6 +321,19 @@ const MODES = {
     label: "📚 La Bibliothèque",
     build: tier => ({ questions: pickQuestions(Array(10).fill(tier)), lives: null, timed: false, noPoints: true }),
   },
+  pensine: {
+    label: "💭 La Pensine",
+    build: tome => {
+      // 8 questions du tome, difficulté croissante — on revit le livre
+      const pool = shuffled(QUESTIONS.filter(q => tomeOf(q) === tome));
+      const qs = pool.slice(0, 8).sort((a, b) => a.t - b.t);
+      return { questions: qs, lives: null, timed: false, tome };
+    },
+  },
+  gringotts: {
+    label: "🐉 Le Coffre de Gringotts",
+    build: () => ({ questions: null, lives: 1, timed: false, endless: true, vault: true }),
+  },
 };
 
 /* ---------------- Partie en cours ---------------- */
@@ -303,10 +346,13 @@ function startGame(modeKey, opt) {
   game = {
     mode: modeKey,
     label: MODES[modeKey].label,
-    questions: cfg.questions,        // null => tirage à la volée (timed / sudden)
+    questions: cfg.questions,        // null => tirage à la volée (timed / sudden / gringotts)
     endless: !!cfg.endless || !!cfg.timed,
     timed: !!cfg.timed,
     noPoints: !!cfg.noPoints,
+    vault: !!cfg.vault,
+    tome: cfg.tome || null,
+    pot: cfg.vault ? 25 : 0,         // butin de Gringotts (mise de départ)
     lives: cfg.lives,
     seconds: cfg.seconds || 0,
     idx: 0, score: 0, correct: 0, streak: 0, results: [],
@@ -327,6 +373,7 @@ function markDayPlayed() {
 
 function tierForEndless(i) {
   // montée en difficulté progressive dans les modes sans liste fixe
+  if (game && game.vault) return [1, 1, 2, 2, 3, 3, 4, 5][Math.min(i, 7)];
   return Math.min(5, 1 + Math.floor(i / 3));
 }
 
@@ -353,8 +400,8 @@ function nextQuestion() {
 
   // HUD
   $("#hud-mode").textContent = game.label;
-  $("#hud-score").textContent = game.score;
-  $("#hud-lives").textContent = game.lives !== null && !game.endless ? "❤️".repeat(game.lives) : (game.mode === "sudden" ? "☠️" : "");
+  $("#hud-score").textContent = game.vault ? game.pot : game.score;
+  $("#hud-lives").textContent = game.vault ? "💰" : (game.lives !== null && !game.endless ? "❤️".repeat(game.lives) : (game.mode === "sudden" ? "☠️" : ""));
   $("#hud-streak").textContent = game.streak >= 2 ? `🔥 ×${streakMult(game.streak).toFixed(2).replace(".00","")}` : "";
   $("#hud-timer").classList.toggle("hidden", !game.timed);
 
@@ -391,6 +438,8 @@ function nextQuestion() {
 
   $("#quiz-feedback").classList.remove("show");
   $("#btn-next").classList.add("hidden");
+  $("#btn-vault-take").classList.add("hidden");
+  $("#btn-vault-risk").classList.add("hidden");
 }
 
 function streakMult(streak) { return 1 + Math.min(Math.max(streak - 1, 0), 4) * 0.25; } // ×1 → ×2
@@ -415,7 +464,10 @@ function answer(btn, ok) {
     state.stats.correct++;
     if (q.t === 5) state.stats.t5correct++;
     if (game.streak > state.stats.bestStreak) state.stats.bestStreak = game.streak;
-    if (!game.noPoints) {
+    if (game.vault) {
+      game.pot *= 2;               // le butin double !
+      game.score = game.pot;
+    } else if (!game.noPoints) {
       gain = Math.round(TIERS[q.t].pts * streakMult(game.streak));
       if (game.mode === "sudden") gain = Math.round(gain * (1 + Math.floor(game.idx / 3) * 0.5));
       game.score += gain;
@@ -423,6 +475,7 @@ function answer(btn, ok) {
     sndGood();
   } else {
     game.streak = 0;
+    if (game.vault) { game.pot = 0; game.score = 0; }  // le dragon garde tout
     if (game.lives !== null) game.lives--;
     sndBad();
   }
@@ -431,19 +484,35 @@ function answer(btn, ok) {
 
   // feedback + source (la clé : chaque réponse cite le livre)
   $("#fb-verdict").textContent = ok
-    ? ["Dix points pour " + (HOUSES[state.house]?.name || "toi") + " !", "Brillant !", "Exactement !", "Le Choixpeau approuve."][Math.floor(Math.random() * 4)]
-    : `Raté… La bonne réponse était : « ${q.c[0]} »`;
+    ? (game.vault
+        ? `Le butin double : ${game.pot} points brillent dans le coffre !`
+        : ["Dix points pour " + (HOUSES[state.house]?.name || "toi") + " !", "Brillant !", "Exactement !", "Le Choixpeau approuve."][Math.floor(Math.random() * 4)])
+    : (game.vault
+        ? `Le dragon se réveille ! Le butin est perdu… La bonne réponse était : « ${q.c[0]} »`
+        : `Raté… La bonne réponse était : « ${q.c[0]} »`);
   $("#fb-verdict").className = "verdict " + (ok ? "ok" : "ko");
   $("#fb-source").innerHTML = `📖 <b>Source :</b> ${esc(q.src)}` + (q.note ? `<br><span style="opacity:.85">${esc(q.note)}</span>` : "");
-  $("#fb-gain").textContent = gain ? `+${gain} points ✨` : "";
+  $("#fb-gain").textContent = game.vault ? "" : (gain ? `+${gain} points ✨` : "");
   $("#quiz-feedback").classList.add("show");
 
-  $("#hud-score").textContent = game.score;
-  $("#hud-lives").textContent = game.lives !== null && !game.endless ? "❤️".repeat(Math.max(game.lives, 0)) : (game.mode === "sudden" ? "☠️" : "");
+  $("#hud-score").textContent = game.vault ? game.pot : game.score;
+  if (!game.vault) $("#hud-lives").textContent = game.lives !== null && !game.endless ? "❤️".repeat(Math.max(game.lives, 0)) : (game.mode === "sudden" ? "☠️" : "");
 
   const dead = game.lives !== null && game.lives <= 0;
 
-  if (game.timed) {
+  if (game.vault) {
+    if (!ok) {
+      setTimeout(() => endGame(false), 2000);
+    } else if (game.idx >= 7) {
+      // fond du coffre atteint : on ne peut que repartir, les bras chargés d'or
+      $("#btn-vault-take").textContent = `👑 Vider le coffre : ${game.pot} points !`;
+      $("#btn-vault-take").classList.remove("hidden");
+    } else {
+      $("#btn-vault-take").textContent = `💰 Repartir avec ${game.pot} points`;
+      $("#btn-vault-take").classList.remove("hidden");
+      $("#btn-vault-risk").classList.remove("hidden");
+    }
+  } else if (game.timed) {
     // rythme rapide : on enchaîne tout seul
     setTimeout(() => { game.idx++; if (!game.over) nextQuestion(); }, ok ? 900 : 1900);
   } else if (dead) {
@@ -453,6 +522,9 @@ function answer(btn, ok) {
     $("#btn-next").focus();
   }
 }
+
+$("#btn-vault-take").addEventListener("click", () => endGame(true));
+$("#btn-vault-risk").addEventListener("click", () => { game.idx++; nextQuestion(); });
 
 $("#btn-next").addEventListener("click", () => { game.idx++; nextQuestion(); });
 $("#btn-quit").addEventListener("click", () => { stopTimer(); endGame(false, true); });
@@ -486,6 +558,18 @@ function endGame(finished, aborted = false) {
   if (game.mode === "sudden" && game.correct > state.stats.suddenBest) state.stats.suddenBest = game.correct;
   if (game.mode === "ascension" && finished && game.lives > 0) state.stats.ascensionWins++;
   if (game.mode === "daily" && game.correct === 5) state.stats.dailyPerfects++;
+  if (game.mode === "gringotts" && finished && !aborted && game.pot > state.stats.gringottsBest) state.stats.gringottsBest = game.pot;
+
+  // Pensine : le souvenir est-il restauré ?
+  let medal = null;
+  if (game.mode === "pensine" && finished && !aborted) {
+    if (game.correct === 8) medal = "gold";
+    else if (game.correct >= 6) medal = "silver";
+    if (medal) {
+      const prev = state.pensine[game.tome];
+      if (prev !== "gold") state.pensine[game.tome] = medal; // on ne dégrade jamais un Vif d'or
+    }
+  }
 
   // gains
   if (!game.noPoints && !aborted) {
@@ -499,9 +583,18 @@ function endGame(finished, aborted = false) {
   // écran de résultat
   const total = totalQuestions();
   const perfect = total !== null && game.correct === total;
-  $("#res-emoji").textContent = aborted ? "🚪" : perfect ? "🏆" : finished ? "✨" : "💀";
+  $("#res-emoji").textContent =
+    aborted ? "🚪" :
+    game.mode === "pensine" ? (medal === "gold" ? "🏅" : medal === "silver" ? "💭" : "🌫️") :
+    game.mode === "gringotts" ? (finished ? "💰" : "🐉") :
+    perfect ? "🏆" : finished ? "✨" : "💀";
   $("#res-title").textContent =
     aborted ? "Retraite stratégique" :
+    game.mode === "pensine" ? (
+      medal === "gold" ? "Souvenir gravé en Vif d'or !" :
+      medal === "silver" ? "Souvenir restauré !" :
+      "Le souvenir se dérobe… il reste trouble.") :
+    game.mode === "gringotts" ? (finished ? (game.idx >= 7 ? "LE COFFRE EST VIDE ! Les gobelins n'en reviennent pas." : "Beau casse. File avant qu'ils ne comptent.") : "Le dragon garde son or…") :
     perfect ? "SANS-FAUTE ! Même Hermione applaudit." :
     finished ? "Épreuve terminée !" :
     game.mode === "sudden" ? "L'Avada Kedavra t'a eue…" : "Les vies se sont envolées…";
@@ -523,6 +616,7 @@ function endGame(finished, aborted = false) {
   $("#btn-replay").onclick = () => {
     if (game.mode === "daily" && state.dailyDone === todayKey()) { renderHome(); show("home"); toast("🌙 Le Défi du Jour ne se joue qu'une fois ! Reviens demain."); return; }
     if (game.mode === "practice") { show("practice"); return; }
+    if (game.mode === "pensine") { renderPensine(); show("pensine"); return; }
     startGame(game.mode);
   };
   renderHome();
@@ -608,6 +702,60 @@ function renderPractice() {
   }
 }
 
+/* ---------------- La Pensine (choix du souvenir) ---------------- */
+
+function renderPensine() {
+  const box = $("#pensine-tomes");
+  box.innerHTML = "";
+  for (let t = 1; t <= 7; t++) {
+    const tome = TOMES[t];
+    const medal = state.pensine[t];
+    const n = QUESTIONS.filter(q => tomeOf(q) === t).length;
+    const b = document.createElement("button");
+    b.className = "mode-card" + (medal ? " memory-" + medal : "");
+    b.innerHTML = `<span class="mi">${tome.icon}</span>
+      <span class="mt">Tome ${t} — ${esc(tome.title)}</span>
+      <span class="md"><em>${esc(tome.tag)}</em></span>
+      <span class="badge">${medal === "gold" ? "🏅 Vif d'or" : medal === "silver" ? "🥈 Restauré" : "🌫️ Souvenir trouble"} · ${n} questions</span>`;
+    b.addEventListener("click", () => startGame("pensine", t));
+    box.appendChild(b);
+  }
+}
+
+/* ---------------- La Réserve ---------------- */
+
+let reserveTab = "facts";
+
+function renderReserve() {
+  const list = $("#reserve-list");
+  const data = reserveTab === "facts"
+    ? (typeof RESERVE_FACTS !== "undefined" ? RESERVE_FACTS : [])
+    : (typeof RESERVE_THEORIES !== "undefined" ? RESERVE_THEORIES : []);
+  $("#tab-facts").className = reserveTab === "facts" ? "btn-gold" : "btn-ghost";
+  $("#tab-theories").className = reserveTab === "theories" ? "btn-gold" : "btn-ghost";
+  list.innerHTML = "";
+  data.forEach((e, i) => {
+    const card = document.createElement("div");
+    card.className = "reserve-card";
+    card.innerHTML = reserveTab === "facts"
+      ? `<div class="rc-head">${e.icon || "📜"} <b>${esc(e.title)}</b><span class="rc-arrow">▾</span></div>
+         <div class="rc-body"><p>${esc(e.text)}</p><div class="rc-source">🔮 Source : ${esc(e.source)}</div></div>`
+      : `<div class="rc-head">🩸 <b>${esc(e.title)}</b><span class="rc-arrow">▾</span></div>
+         <div class="rc-body"><p>${esc(e.text)}</p>
+           <div class="rc-source">🕸️ Origine : ${esc(e.origin)}</div>
+           <div class="rc-status">${esc(e.status)}</div></div>`;
+    card.querySelector(".rc-head").addEventListener("click", () => {
+      card.classList.toggle("open");
+      if (card.classList.contains("open")) sndTick();
+    });
+    list.appendChild(card);
+  });
+  if (!data.length) list.innerHTML = "<p style='text-align:center;opacity:.7'>Les grimoires sont encore sous scellés…</p>";
+}
+
+$("#tab-facts").addEventListener("click", () => { reserveTab = "facts"; renderReserve(); });
+$("#tab-theories").addEventListener("click", () => { reserveTab = "theories"; renderReserve(); });
+
 /* ---------------- Lancement des modes ---------------- */
 
 $$(".mode-card[data-mode]").forEach(card => card.addEventListener("click", () => {
@@ -617,6 +765,7 @@ $$(".mode-card[data-mode]").forEach(card => card.addEventListener("click", () =>
     return;
   }
   if (m === "practice") { renderPractice(); show("practice"); return; }
+  if (m === "pensine") { renderPensine(); show("pensine"); return; }
   startGame(m);
 }));
 

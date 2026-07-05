@@ -59,6 +59,35 @@ sont refusés à l'entrée, comme un élève sans mot de passe devant la Grosse
 Dame. En cas de doute sur un détail, la question est reformulée pour ne
 porter que sur la partie certaine — ou supprimée.
 
+## 4 bis. La passe de vérification web
+
+Depuis la deuxième fournée, tout fait « sensible » (chiffre exact, score,
+date, nom propre rare, forme VF d'un nom traduit, mot de passe) passe par
+une **vérification croisée en ligne** avant d'entrer dans le Grimoire :
+HP-Lexicon (le plus rigoureux sur le texte des romans), l'Encyclopédie HP
+(encyclopedie-hp.org), le wiki Harry Potter francophone et le Muggles'
+Guide (Wikibooks). Un fait invérifiable est reformulé sur sa seule partie
+certaine — ou jeté. Les pièges d'édition connus (l'ordre Lily/James du
+Priori Incantatem, corrigé après les premiers tirages ; le nombre de
+B.U.S.E. d'Hermione, variable selon les éditions) sont soit signalés dans
+la question, soit écartés.
+
+## 4 ter. L'exception assumée : la Réserve
+
+La section « 🕯️ La Réserve » est le SEUL endroit de l'application qui
+quitte le canon strict des romans — c'est écrit dessus. Ses deux rayons :
+
+- **Les Grimoires du lore étendu** : faits vérifiés et sourcés issus de
+  Pottermore / Wizarding World et d'interviews publiques de J.K. Rowling
+  (chaque fiche cite sa source).
+- **Les Manuscrits interdits** : théories de fans célèbres et RÉELLES,
+  collectées sur Reddit, Tumblr et les forums, avec leur origine et leur
+  statut (saluée par J.K.R. / démentie / jamais tranchée). Elles ne sont
+  jamais présentées comme des faits.
+
+Aucune entrée de la Réserve ne sert de question de quizz : les points ne
+se gagnent que sur le canon des romans.
+
 ## 5. Vérifiabilité et contestation
 
 La citation affichée après chaque réponse rend toute question **contestable
