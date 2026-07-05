@@ -263,6 +263,45 @@ button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: no
 .house-pick button { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; }
 .house-pick .hp-icon { font-size: 1.8rem; }
 
+/* ================= LA PENSINE ================= */
+
+.mode-card.memory-silver { border-color: #bcc6d4; box-shadow: 0 0 14px rgba(188,198,212,.25); }
+.mode-card.memory-gold   { border-color: var(--gold-bright); box-shadow: 0 0 18px rgba(243,217,139,.35); }
+
+/* ================= LA RÉSERVE ================= */
+
+.reserve-intro {
+  text-align: center; font-size: .92rem; opacity: .85; line-height: 1.5;
+  max-width: 620px; margin: 0 auto 16px;
+}
+.reserve-card {
+  border: 1px solid rgba(216,180,90,.3);
+  border-radius: 12px; margin-bottom: 10px;
+  background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.012));
+  overflow: hidden;
+}
+.reserve-card .rc-head {
+  padding: 13px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  color: var(--gold-bright); user-select: none;
+}
+.reserve-card .rc-head:hover { background: rgba(216,180,90,.08); }
+.reserve-card .rc-arrow { margin-left: auto; transition: transform .3s ease; opacity: .6; }
+.reserve-card.open .rc-arrow { transform: rotate(180deg); }
+.reserve-card .rc-body {
+  display: none; padding: 4px 18px 14px; line-height: 1.55; font-size: .95rem;
+}
+.reserve-card.open .rc-body { display: block; animation: appear .35s ease; }
+.rc-source {
+  margin-top: 10px; font-size: .82rem; font-style: italic; opacity: .8;
+  border-left: 3px solid var(--gold); padding: 4px 10px;
+}
+.rc-status {
+  display: inline-block; margin-top: 8px; font-size: .78rem;
+  padding: 3px 12px; border-radius: 999px;
+  border: 1px dashed rgba(184,67,63,.7); color: #e8a09e;
+  background: rgba(184,67,63,.12); letter-spacing: .5px;
+}
+
 /* ================= DIVERS ================= */
 
 .topnav { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
