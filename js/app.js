@@ -55,6 +55,7 @@ const defaultState = () => ({
     dailyPerfects: 0, ascensionWins: 0, t5correct: 0,
   },
   pensine: {},        // { "1": "silver"|"gold", ... } souvenirs restaurés
+  served: {},         // ventilation : clés des questions déjà servies (sac par niveau)
   daysPlayed: [],     // ["2026-07-05", ...]
   dailyDone: null,    // clé du jour déjà joué
   questsDone: [],     // ids de quêtes accomplies
@@ -292,12 +293,40 @@ function tomeOf(q) {
 
 /* ---------------- Construction des parties ---------------- */
 
-function pickQuestions(tierSeq, rnd = Math.random) {
-  // une question par entrée de tierSeq, sans doublon
+/* ---- Ventilation : éviter de reservir trop souvent les mêmes questions ----
+   Chaque question a une clé stable. Tant qu'un « sac » (l'ensemble des
+   questions d'un pool) n'est pas épuisé, on ne ressert pas une question déjà
+   servie ; quand tout le pool a été vu, on vide le sac et on recommence.
+   L'état est persistant (localStorage), donc la ventilation tient d'une
+   session à l'autre. */
+function qKey(q) { return hashStr(q.q).toString(36); }
+
+function pickFresh(pool, used, rnd = Math.random) {
+  if (!pool.length) return null;
+  let cand = pool.filter(q => !used.has(q.q) && !state.served[qKey(q)]);
+  if (!cand.length) {                       // sac épuisé pour ce pool : on le réinitialise
+    pool.forEach(q => { delete state.served[qKey(q)]; });
+    cand = pool.filter(q => !used.has(q.q));
+    if (!cand.length) cand = pool;
+  }
+  const q = cand[Math.floor(rnd() * cand.length)];
+  state.served[qKey(q)] = 1;
+  return q;
+}
+
+// fresh=true : ventilation active (tous les modes sauf le Défi du Jour,
+// qui doit rester déterministe et identique pour tout le monde).
+function pickQuestions(tierSeq, rnd = Math.random, fresh = true) {
   const used = new Set();
   return tierSeq.map(t => {
-    const pool = questionsOfTier(t).filter(q => !used.has(q.q));
-    const q = pool[Math.floor(rnd() * pool.length)] || questionsOfTier(t)[0];
+    const pool = questionsOfTier(t);
+    let q;
+    if (fresh) {
+      q = pickFresh(pool, used, rnd);
+    } else {
+      const avail = pool.filter(x => !used.has(x.q));
+      q = avail[Math.floor(rnd() * avail.length)] || pool[0];
+    }
     used.add(q.q);
     return q;
   });
@@ -312,7 +341,7 @@ const MODES = {
     label: "🌙 Défi du Jour",
     build: () => {
       const rnd = mulberry32(hashStr("grimoire-" + todayKey()));
-      return { questions: pickQuestions([1,2,3,4,5], rnd), lives: null, timed: false };
+      return { questions: pickQuestions([1,2,3,4,5], rnd, false), lives: null, timed: false };
     },
   },
   timed: {
@@ -330,9 +359,12 @@ const MODES = {
   pensine: {
     label: "💭 La Pensine",
     build: tome => {
-      // 8 questions du tome, difficulté croissante — on revit le livre
-      const pool = shuffled(QUESTIONS.filter(q => tomeOf(q) === tome));
-      const qs = pool.slice(0, 8).sort((a, b) => a.t - b.t);
+      // 8 souvenirs du tome, ventilés, difficulté croissante — on revit le livre
+      const pool = QUESTIONS.filter(q => tomeOf(q) === tome);
+      const used = new Set(); const qs = [];
+      const n = Math.min(8, pool.length);
+      while (qs.length < n) { const q = pickFresh(pool, used); used.add(q.q); qs.push(q); }
+      qs.sort((a, b) => a.t - b.t);
       return { questions: qs, lives: null, timed: false, tome };
     },
   },
@@ -386,10 +418,10 @@ function tierForEndless(i) {
 function drawQuestion() {
   if (game.questions) return game.questions[game.idx];
   const t = tierForEndless(game.idx);
-  let pool = questionsOfTier(t).filter(q => !game.usedQ.has(q.q));
-  if (!pool.length) pool = QUESTIONS.filter(q => !game.usedQ.has(q.q));
-  if (!pool.length) { game.usedQ.clear(); pool = questionsOfTier(t); }
-  return pool[Math.floor(Math.random() * pool.length)];
+  // ventilation active aussi dans les modes sans liste fixe (Contre-la-Montre,
+  // Mort Subite, Gringotts) : on ne ressert pas une question déjà vue tant que
+  // le niveau n'est pas épuisé.
+  return pickFresh(questionsOfTier(t), game.usedQ, Math.random);
 }
 
 function totalQuestions() { return game.questions ? game.questions.length : null; }
