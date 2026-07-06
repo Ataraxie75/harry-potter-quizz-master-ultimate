@@ -32,7 +32,11 @@ body {
   background: radial-gradient(ellipse at 50% -10%, var(--parch1) 0%, var(--parch2) 55%, var(--parch3) 100%);
   background-attachment: fixed;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Fines mouchetures du vieux papier (anciennes étoiles) */
@@ -67,7 +71,10 @@ body {
 @keyframes flicker { from { opacity: .7; transform: translateX(-50%) scale(.9); }
                      to   { opacity: 1;  transform: translateX(-50%) scale(1.1); } }
 
-#app { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+#app {
+  position: relative; z-index: 1; max-width: 760px; margin: 0 auto;
+  padding: calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(64px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
 
 /* ================= TITRES ================= */
 
@@ -107,6 +114,7 @@ button {
   color: var(--ink);
   padding: 10px 18px; font-size: 1rem;
   transition: transform .12s ease, box-shadow .12s ease, background .2s;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none;
 }
 button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(140,100,40,.28); background: linear-gradient(180deg, #f8ecce, #eeddb2); }
 button:active { transform: none; }
@@ -331,7 +339,9 @@ button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: no
 .toast.show { opacity: 1; transform: translateX(-50%); }
 
 @media (max-width: 520px) {
-  #app { padding: 18px 14px 56px; }
+  #app {
+    padding: calc(18px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+  }
   .brand { letter-spacing: 1px; }
   .brand small { letter-spacing: 3px; font-size: .38em; }
   .tagline { font-size: .85rem; margin-bottom: 20px; }
@@ -339,7 +349,27 @@ button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: no
   .qtext { font-size: 1.05rem; }
   .candle { opacity: .38; }
   /* Réserve : marges d'aération sur petit écran */
-  .reserve-card .rc-head { padding: 12px 14px; }
+  .reserve-card .rc-head { padding: 14px; }
   .reserve-card .rc-body { padding: 4px 14px 13px; }
   h2.section { font-size: 1.35rem; }
+
+  /* --- Ergonomie tactile --- */
+  /* Zones de tap plus généreuses pour les réponses */
+  .answers button { padding: 15px 15px; font-size: 1.02rem; }
+  .topnav button { padding: 9px 14px; }
+  .house-pick button { padding: 16px 10px; }
+
+  /* Boutons d'action principaux en pleine largeur, faciles au pouce */
+  .btn-row { gap: 8px; }
+  .btn-row button { flex: 1 1 100%; min-height: 50px; font-size: 1.05rem; }
+
+  /* Barre d'action du quiz collée en bas de l'écran, au pouce */
+  #screen-quiz .btn-row {
+    position: sticky; bottom: 0; margin-top: 16px;
+    padding: 10px 0 calc(6px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--parch2) 68%, rgba(241,227,196,0));
+  }
+
+  /* Cartes de modes : un peu plus compactes en pile */
+  .mode-card { padding: 15px; }
 }
