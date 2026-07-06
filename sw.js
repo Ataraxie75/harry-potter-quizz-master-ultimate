@@ -4,16 +4,16 @@
    versionné : à chaque déploiement (bump de VERSION), l'ancien est purgé,
    ce qui évite tout contenu périmé. */
 
-const VERSION = "v6";
+const VERSION = "v7";
 const CACHE = "grimoire-" + VERSION;
 
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/style.css?v=6",
-  "./js/questions.js?v=6",
-  "./js/reserve.js?v=6",
-  "./js/app.js?v=6",
+  "./css/style.css?v=7",
+  "./js/questions.js?v=7",
+  "./js/reserve.js?v=7",
+  "./js/app.js?v=7",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
