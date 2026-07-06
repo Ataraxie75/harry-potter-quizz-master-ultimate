@@ -36,11 +36,16 @@ assumé.
 
 ## 📖 Les questions : 5 niveaux de difficulté
 
-**1497 questions**, de « Dans quelle rue habitent les Dursley ? » jusqu'à
+**1891 questions**, de « Dans quelle rue habitent les Dursley ? » jusqu'à
 « Depuis quand la famille Ollivander fabrique-t-elle des baguettes ? »
 (382 av. J.-C., évidemment). Les sept tomes sont couverts en profondeur, du
-placard sous l'escalier jusqu'à l'épilogue — répartition : 227 (niv. 1),
-310 (niv. 2), 377 (niv. 3), 355 (niv. 4), 228 (niv. 5).
+placard sous l'escalier jusqu'à l'épilogue — répartition : 261 (niv. 1),
+382 (niv. 2), 483 (niv. 3), 457 (niv. 4), 308 (niv. 5). Dont un socle dédié
+aux 15 personnages principaux et aux 10 lieux emblématiques.
+
+Une **ventilation anti-répétition** garantit qu'une question ne réapparaît
+pas tant que tout son niveau n'a pas défilé (mémorisé d'une session à
+l'autre).
 
 **Chaque question cite sa source — tome et chapitre — affichée après chaque
 réponse.** Le périmètre est le canon strict des 7 romans, dans la traduction
