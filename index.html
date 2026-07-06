@@ -2,10 +2,20 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Le Grand Grimoire — Quizz Harry Potter (canon des livres)</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-<link rel="stylesheet" href="css/style.css?v=4">
+
+<!-- PWA : application installable, plein écran, hors-ligne -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f1e3c4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Grand Grimoire">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -232,8 +242,16 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="js/questions.js?v=4"></script>
-<script src="js/reserve.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/questions.js?v=5"></script>
+<script src="js/reserve.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
+<script>
+  /* Enregistrement du service worker (mode hors-ligne + installation) */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>

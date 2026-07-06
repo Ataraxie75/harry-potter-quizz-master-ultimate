@@ -48,12 +48,23 @@ maudit*. Le protocole complet de sourcing est décrit dans
 [SOURCES.md](SOURCES.md) — et la règle d'or est simple : *le quizz n'a
 jamais raison contre le livre.*
 
+## 📱 Application installable (PWA)
+
+Sur téléphone, ouvre l'adresse puis **« Ajouter à l'écran d'accueil »** :
+l'appli s'installe avec sa propre icône ⚡, se lance en plein écran (sans
+barre de navigateur) et **fonctionne hors-ligne** (service worker) — idéal
+dans le train sans réseau. Interface optimisée pour le tactile : grandes
+zones de tap, gestion de l'encoche, barre d'action au pouce.
+
 ## 🛠️ Technique
 
-- HTML / CSS / JavaScript vanilla, un seul écran de ~4 fichiers.
-- Sauvegarde locale (`localStorage`) : profil, records, quêtes, Coupe.
+- HTML / CSS / JavaScript vanilla, aucune dépendance.
+- Sauvegarde locale (`localStorage`) : profil, records, quêtes, Coupe, Pensine.
+- PWA : `manifest.webmanifest` + service worker (`sw.js`, stratégie réseau
+  d'abord avec repli hors-ligne, cache versionné).
 - Défi du Jour déterministe (généré à partir de la date).
-- Effets sonores en WebAudio (désactivables), ciel étoilé et bougies en CSS pur.
+- Effets sonores en WebAudio (désactivables), décor en CSS pur.
+- Thème parchemin clair, pensé pour rester lisible en plein soleil.
 
 ## ➕ Ajouter des questions
 
