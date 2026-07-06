@@ -174,12 +174,18 @@ const sndTick = () => beep([880], 0.05, "square", 0.05);
     s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;width:${size}px;height:${size}px;animation-delay:${Math.random() * 3}s;animation-duration:${2 + Math.random() * 3}s`;
     stars.appendChild(s);
   }
-  for (let i = 0; i < 7; i++) {
+  // Bougies flottantes placées dans les marges latérales, sous la zone
+  // du titre, pour encadrer le contenu sans jamais le recouvrir.
+  const candleSpots = [
+    { l: 3,  t: 40 }, { l: 5,  t: 66 }, { l: 2.5, t: 90 },
+    { l: 95, t: 34 }, { l: 93, t: 60 }, { l: 96,  t: 86 },
+  ];
+  candleSpots.forEach((s, i) => {
     const c = document.createElement("div");
     c.className = "candle";
-    c.style.cssText = `left:${5 + Math.random() * 90}%;top:${Math.random() * 30}%;animation-delay:${Math.random() * 5}s`;
+    c.style.cssText = `left:${s.l}%;top:${s.t}%;animation-delay:${(i * 0.8).toFixed(1)}s`;
     document.body.appendChild(c);
-  }
+  });
 })();
 
 /* ---------------- Navigation ---------------- */

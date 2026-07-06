@@ -45,10 +45,10 @@ body {
 /* Bougies flottantes */
 .candle {
   position: fixed; pointer-events: none; z-index: 0;
-  width: 6px; height: 26px; border-radius: 3px;
+  width: 5px; height: 22px; border-radius: 3px;
   background: linear-gradient(#f7ecd0, #d8b45a);
   animation: floaty 6s ease-in-out infinite alternate;
-  opacity: .8;
+  opacity: .5;
 }
 .candle::before {
   content: ""; position: absolute; top: -10px; left: 50%;
@@ -321,6 +321,15 @@ button:disabled { opacity: .45; cursor: default; transform: none; box-shadow: no
 .toast.show { opacity: 1; transform: translateX(-50%); }
 
 @media (max-width: 520px) {
+  #app { padding: 18px 14px 56px; }
+  .brand { letter-spacing: 1px; }
+  .brand small { letter-spacing: 3px; font-size: .38em; }
+  .tagline { font-size: .85rem; margin-bottom: 20px; }
   .quiz-head .hud { font-size: .85rem; gap: 9px; }
   .qtext { font-size: 1.05rem; }
+  .candle { opacity: .38; }
+  /* Réserve : marges d'aération sur petit écran */
+  .reserve-card .rc-head { padding: 12px 14px; }
+  .reserve-card .rc-body { padding: 4px 14px 13px; }
+  h2.section { font-size: 1.35rem; }
 }
