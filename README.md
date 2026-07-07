@@ -1,87 +1,68 @@
-# ✦ Le Grand Grimoire ✦
+# 🏋️ Mon Coach — Sport & Nutrition
 
-**Le quizz Harry Potter ultime — canon strict des sept livres, rien d'autre.**
+Application web personnelle de coaching sportif : **journal
+d'entraînement** + **suivi nutritionnel basé sur tes besoins caloriques**,
+le tout **100 % hors-ligne** et privé.
 
-Une application web complète, sans aucune dépendance : ouvre `index.html`
-dans un navigateur et c'est parti. Aucune installation, aucun serveur,
-aucune connexion requise. Fonctionne sur mobile.
+Aucune dépendance, aucun serveur, aucun compte. Ouvre `index.html` dans un
+navigateur (ou installe-la sur ton téléphone) et c'est parti. **Toutes tes
+données restent sur ton appareil** (`localStorage`).
 
-## 🎮 Les modes de jeu
+## Ce que fait l'appli
 
-| Mode | Principe |
-|---|---|
-| 🌠 **L'Ascension** | Le mode principal : 15 questions, de la Première Année au Département des Mystères, 3 vies. |
-| 🌙 **Le Défi du Jour** | 5 questions tirées par la date — les mêmes pour tout le monde, une seule tentative par jour. |
-| ⏳ **Contre-la-Montre** | 90 secondes, un maximum de bonnes réponses, la difficulté grimpe. |
-| 💀 **Mort Subite** | Une erreur = fin de partie. Les points s'envolent avec les paliers. |
-| 💭 **La Pensine** | Replonge dans chaque tome, un souvenir à la fois. 8 questions par livre ; restaure le souvenir en argent (6/8) ou grave-le en Vif d'or (8/8). Les sept médailles se conservent. |
-| 🐉 **Le Coffre de Gringotts** | Quitte ou double : chaque bonne réponse **double** ton butin. Encaisse quand tu veux… mais une seule erreur et le dragon garde tout. |
-| 📚 **La Bibliothèque** | Révisions libres par niveau, sans enjeu, avec les sources. |
+### 🎯 Profil & besoins caloriques
+Tu saisis ton sexe, âge, poids, taille, niveau d'activité et ton objectif
+(perte de gras → prise de masse). L'appli calcule automatiquement :
 
-Et une section à part, **🕯️ La Réserve** (la section interdite) : 16 fiches
-de *lore étendu* vérifiées et sourcées (Pottermore, interviews de J.K.
-Rowling) et 12 *théories de fans* réelles et célèbres, chacune avec son
-origine et son statut (saluée par J.K.R. / démentie / jamais tranchée).
-C'est le seul endroit de l'appli qui sort du canon des romans — et c'est
-assumé.
+- ton **métabolisme de base** (formule de Mifflin-St Jeor),
+- ta **dépense énergétique quotidienne** (TDEE = métabolisme × activité),
+- ta **cible calorique** selon l'objectif,
+- ta **répartition de macros** (protéines / glucides / lipides), réglable
+  (g de protéines par kg, % de lipides).
 
-## ⚡ La progression
+Tu déclares aussi tes **contraintes alimentaires** (végétarien, sans gluten,
+sans lactose, halal, allergies…) : elles sont rappelées quand tu ajoutes un
+repas.
 
-- **Points & multiplicateur de série** : enchaîne les bonnes réponses (jusqu'à ×2).
-- **7 rangs**, d'« Élève de Première Année » à « Maîtresse du Lore — niveau J.K.R. ».
-- **10 quêtes** à accomplir (sans-faute, records, assiduité…), avec points bonus.
-- 🏆 **La Coupe des Quatre Maisons** : tes points font vivre ta maison face aux
-  trois autres, qui marquent semaine après semaine. La Répartition a lieu au
-  premier lancement (le Choixpeau peut décider pour toi).
+### 🍽️ Nutrition
+Journal alimentaire jour par jour, réparti par repas
+(petit-déj / déjeuner / dîner / collation). Pour chaque aliment tu saisis
+calories et macros — et si tu ne connais que les macros, les calories sont
+déduites automatiquement. Barres de progression en temps réel vs tes
+objectifs, calories restantes du jour, navigation entre les jours.
 
-## 📖 Les questions : 5 niveaux de difficulté
+### 🏋️ Entraînement
+- **Bibliothèque d'exercices** : crée tes exercices, classés par groupe
+  musculaire, avec des notes (prise, tempo…).
+- **Séances types** : assemble des modèles de séance (séries × reps × poids
+  cibles) à réutiliser.
+- **Journal / séance en direct** : démarre une séance, saisis tes séries
+  (reps + poids) au fur et à mesure, ajoute des exercices à la volée,
+  note ton ressenti, puis enregistre.
+- **Progression** : par exercice, courbe du poids max par séance, record,
+  et évolution depuis le début.
 
-**1891 questions**, de « Dans quelle rue habitent les Dursley ? » jusqu'à
-« Depuis quand la famille Ollivander fabrique-t-elle des baguettes ? »
-(382 av. J.-C., évidemment). Les sept tomes sont couverts en profondeur, du
-placard sous l'escalier jusqu'à l'épilogue — répartition : 261 (niv. 1),
-382 (niv. 2), 483 (niv. 3), 457 (niv. 4), 308 (niv. 5). Dont un socle dédié
-aux 15 personnages principaux et aux 10 lieux emblématiques.
+### 📊 Tableau de bord
+Résumé du jour : calories consommées / restantes, macros, état de la séance
+du jour et rappel de tes contraintes.
 
-Une **ventilation anti-répétition** garantit qu'une question ne réapparaît
-pas tant que tout son niveau n'a pas défilé (mémorisé d'une session à
-l'autre).
-
-**Chaque question cite sa source — tome et chapitre — affichée après chaque
-réponse.** Le périmètre est le canon strict des 7 romans, dans la traduction
-française de Jean-François Ménard : ni films, ni Pottermore, ni *Enfant
-maudit*. Le protocole complet de sourcing est décrit dans
-[SOURCES.md](SOURCES.md) — et la règle d'or est simple : *le quizz n'a
-jamais raison contre le livre.*
-
-## 📱 Application installable (PWA)
+## 📱 Installation (PWA)
 
 Sur téléphone, ouvre l'adresse puis **« Ajouter à l'écran d'accueil »** :
-l'appli s'installe avec sa propre icône ⚡, se lance en plein écran (sans
-barre de navigateur) et **fonctionne hors-ligne** (service worker) — idéal
-dans le train sans réseau. Interface optimisée pour le tactile : grandes
-zones de tap, gestion de l'encoche, barre d'action au pouce.
+l'appli s'installe avec son icône, se lance en plein écran et **fonctionne
+hors-ligne** (service worker).
+
+## 💾 Sauvegarde
+
+Dans **Profil → Données**, tu peux **exporter** une sauvegarde JSON (à
+garder au cas où tu changes de téléphone) et la **réimporter**.
 
 ## 🛠️ Technique
 
-- HTML / CSS / JavaScript vanilla, aucune dépendance.
-- Sauvegarde locale (`localStorage`) : profil, records, quêtes, Coupe, Pensine.
-- PWA : `manifest.webmanifest` + service worker (`sw.js`, stratégie réseau
-  d'abord avec repli hors-ligne, cache versionné).
-- Défi du Jour déterministe (généré à partir de la date).
-- Effets sonores en WebAudio (désactivables), décor en CSS pur.
-- Thème parchemin clair, pensé pour rester lisible en plein soleil.
+- HTML / CSS / JavaScript vanilla, zéro dépendance.
+- Stockage local (`localStorage`).
+- PWA : `manifest.webmanifest` + service worker (`sw.js`).
+- Calculs nutritionnels : Mifflin-St Jeor + facteurs d'activité standards.
 
-## ➕ Ajouter des questions
-
-Ouvre `js/questions.js` et ajoute une entrée :
-
-```js
-{ t: 3,                                // difficulté 1..5
-  q: "Ta question ?",
-  c: ["Bonne réponse", "Leurre", "Leurre", "Leurre"],  // la bonne TOUJOURS en premier
-  src: "Tome X, chap. Y",              // OBLIGATOIRE
-  note: "Anecdote optionnelle." }
-```
-
-Les choix sont mélangés automatiquement à l'affichage.
+> ⚠️ Outil de suivi personnel, pas un avis médical. Pour un objectif de santé
+> précis, demande conseil à un professionnel.

@@ -1,19 +1,15 @@
-/* Service worker du Grand Grimoire.
-   Stratégie « réseau d'abord » : toujours la dernière version quand on est
-   connecté, et repli sur le cache quand on est hors-ligne. Le cache est
-   versionné : à chaque déploiement (bump de VERSION), l'ancien est purgé,
-   ce qui évite tout contenu périmé. */
+/* Service worker — Mon Coach.
+   Stratégie « réseau d'abord » avec repli hors-ligne sur le cache.
+   Cache versionné : bumpe VERSION à chaque déploiement pour purger l'ancien. */
 
-const VERSION = "v8";
-const CACHE = "grimoire-" + VERSION;
+const VERSION = "v1";
+const CACHE = "coach-" + VERSION;
 
 const ASSETS = [
   "./",
   "./index.html",
-  "./css/style.css?v=8",
-  "./js/questions.js?v=8",
-  "./js/reserve.js?v=8",
-  "./js/app.js?v=8",
+  "./css/coach.css?v=1",
+  "./js/coach.js?v=1",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
