@@ -1,257 +1,228 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Le Grand Grimoire — Quizz Harry Potter (canon des livres)</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-
-<!-- PWA : application installable, plein écran, hors-ligne -->
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#141a3a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Grand Grimoire">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
-
-<link rel="stylesheet" href="css/style.css?v=8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1420" />
+  <title>Mon Coach — Suivi sport & nutrition</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="stylesheet" href="css/coach.css?v=1" />
 </head>
 <body>
+  <div id="app">
+    <!-- ================= TABLEAU DE BORD ================= -->
+    <section class="view" id="view-dash" data-view="dash">
+      <header class="topbar">
+        <h1>Aujourd'hui</h1>
+        <div class="topbar-date" id="dash-date"></div>
+      </header>
 
-<div id="stars"></div>
-
-<div id="app">
-
-  <h1 class="brand">✦ Le Grand Grimoire ✦<small>QUIZZ · CANON DES SEPT LIVRES</small></h1>
-  <p class="tagline">« Les mots sont notre plus inépuisable source de magie. »</p>
-
-  <!-- ========== RÉPARTITION (premier lancement) ========== -->
-  <section id="screen-sorting" class="screen">
-    <div class="panel sorting">
-      <h2 class="section">🎩 La Cérémonie de la Répartition</h2>
-      <p>Le Choixpeau se penche vers toi… Comment t'appelles-tu, jeune sorcière ?</p>
-      <input id="player-name" type="text" maxlength="20" placeholder="Ton prénom de sorcière">
-      <p style="opacity:.8; font-size:.9rem;">Choisis ta maison — ou laisse le Choixpeau décider.</p>
-      <div class="house-pick">
-        <button data-house="gryffondor"><span class="hp-icon">🦁</span>Gryffondor</button>
-        <button data-house="poufsouffle"><span class="hp-icon">🦡</span>Poufsouffle</button>
-        <button data-house="serdaigle"><span class="hp-icon">🦅</span>Serdaigle</button>
-        <button data-house="serpentard"><span class="hp-icon">🐍</span>Serpentard</button>
+      <div class="cards" id="dash-cards">
+        <!-- rempli par JS -->
       </div>
-      <div class="btn-row">
-        <button id="hat-decides" class="btn-gold">🎩 Que le Choixpeau décide !</button>
+
+      <div class="card" id="dash-macros-card">
+        <h2>Macros du jour</h2>
+        <div id="dash-macros"></div>
       </div>
-    </div>
-  </section>
 
-  <!-- ========== ACCUEIL ========== -->
-  <section id="screen-home" class="screen">
+      <div class="card">
+        <h2>Séance du jour</h2>
+        <div id="dash-workout"></div>
+      </div>
 
-    <div class="panel profile-bar">
-      <div class="profile-id">
-        <div id="home-crest" class="crest">🦁</div>
-        <div>
-          <div id="home-name" class="profile-name">—</div>
-          <div id="home-rank" class="profile-rank">—</div>
+      <div class="card" id="dash-constraints-card" hidden>
+        <h2>⚠️ Contraintes alimentaires</h2>
+        <div id="dash-constraints" class="chips"></div>
+      </div>
+    </section>
+
+    <!-- ================= ENTRAÎNEMENT ================= -->
+    <section class="view" id="view-train" data-view="train" hidden>
+      <header class="topbar">
+        <h1>Entraînement</h1>
+      </header>
+
+      <nav class="segmented" id="train-tabs">
+        <button data-tab="log" class="active">Journal</button>
+        <button data-tab="programs">Séances</button>
+        <button data-tab="library">Exercices</button>
+        <button data-tab="progress">Progression</button>
+      </nav>
+
+      <!-- Journal / séance en cours -->
+      <div class="subview" id="train-log">
+        <div id="active-session"></div>
+        <button class="btn primary block" id="btn-start-session">▶︎ Démarrer une séance</button>
+        <h2 class="section-title">Historique</h2>
+        <div id="session-history"></div>
+      </div>
+
+      <!-- Programmes -->
+      <div class="subview" id="train-programs" hidden>
+        <button class="btn primary block" id="btn-new-program">＋ Nouvelle séance type</button>
+        <div id="program-list"></div>
+      </div>
+
+      <!-- Bibliothèque d'exercices -->
+      <div class="subview" id="train-library" hidden>
+        <button class="btn primary block" id="btn-new-exercise">＋ Nouvel exercice</button>
+        <div id="exercise-list"></div>
+      </div>
+
+      <!-- Progression -->
+      <div class="subview" id="train-progress" hidden>
+        <label class="field">
+          <span>Exercice</span>
+          <select id="progress-select"></select>
+        </label>
+        <div id="progress-chart"></div>
+        <div id="progress-records"></div>
+      </div>
+    </section>
+
+    <!-- ================= NUTRITION ================= -->
+    <section class="view" id="view-nutri" data-view="nutri" hidden>
+      <header class="topbar">
+        <h1>Nutrition</h1>
+        <div class="topbar-date">
+          <button class="btn ghost tiny" id="nutri-prev">‹</button>
+          <span id="nutri-date"></span>
+          <button class="btn ghost tiny" id="nutri-next">›</button>
         </div>
+      </header>
+
+      <div class="card" id="nutri-summary"></div>
+
+      <button class="btn primary block" id="btn-add-food">＋ Ajouter un aliment</button>
+
+      <div id="nutri-entries"></div>
+    </section>
+
+    <!-- ================= PROFIL ================= -->
+    <section class="view" id="view-profile" data-view="profile" hidden>
+      <header class="topbar">
+        <h1>Profil & objectifs</h1>
+      </header>
+
+      <form class="card" id="profile-form">
+        <h2>Mes données</h2>
+        <div class="grid2">
+          <label class="field">
+            <span>Sexe</span>
+            <select id="pf-sex">
+              <option value="male">Homme</option>
+              <option value="female">Femme</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Âge</span>
+            <input type="number" id="pf-age" min="12" max="100" inputmode="numeric" />
+          </label>
+          <label class="field">
+            <span>Poids (kg)</span>
+            <input type="number" id="pf-weight" min="30" max="300" step="0.1" inputmode="decimal" />
+          </label>
+          <label class="field">
+            <span>Taille (cm)</span>
+            <input type="number" id="pf-height" min="120" max="230" inputmode="numeric" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Niveau d'activité</span>
+          <select id="pf-activity">
+            <option value="1.2">Sédentaire (peu ou pas d'exercice)</option>
+            <option value="1.375">Léger (1-3 séances/sem.)</option>
+            <option value="1.55" selected>Modéré (3-5 séances/sem.)</option>
+            <option value="1.725">Intense (6-7 séances/sem.)</option>
+            <option value="1.9">Très intense (2×/jour, travail physique)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Objectif</span>
+          <select id="pf-goal">
+            <option value="cut">Perte de gras (-20 %)</option>
+            <option value="cut-light">Sèche légère (-10 %)</option>
+            <option value="maintain" selected>Maintien</option>
+            <option value="lean">Prise de masse sèche (+10 %)</option>
+            <option value="bulk">Prise de masse (+20 %)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Protéines cible (g par kg de poids)</span>
+          <input type="number" id="pf-protein" min="1" max="3" step="0.1" value="2" inputmode="decimal" />
+        </label>
+
+        <label class="field">
+          <span>Part des lipides (% des calories)</span>
+          <input type="number" id="pf-fatpct" min="15" max="45" step="1" value="30" inputmode="numeric" />
+        </label>
+
+        <button type="submit" class="btn primary block">Enregistrer</button>
+      </form>
+
+      <div class="card" id="targets-card">
+        <h2>Mes besoins calculés</h2>
+        <div id="targets-out"></div>
       </div>
-      <div class="profile-pts">
-        <div><b id="home-pts">0</b> pts</div>
-        <div class="xpbar"><i id="home-xp" style="width:0%"></i></div>
-        <div id="home-next" style="font-size:.75rem; opacity:.7; margin-top:3px;"></div>
+
+      <div class="card">
+        <h2>Contraintes alimentaires</h2>
+        <p class="muted">Coche ce qui s'applique et ajoute tes restrictions/allergies.</p>
+        <div class="chips" id="constraint-toggles"></div>
+        <label class="field">
+          <span>Autres contraintes / allergies</span>
+          <textarea id="pf-constraints-free" rows="3" placeholder="Ex : allergie aux fruits à coque, pas de porc, faible en FODMAP…"></textarea>
+        </label>
+        <button class="btn primary block" id="btn-save-constraints">Enregistrer les contraintes</button>
       </div>
-    </div>
 
-    <div class="topnav">
-      <button data-nav="quests">📜 Quêtes</button>
-      <button data-nav="cup">🏆 Coupe des Maisons</button>
-      <button data-nav="reserve">🕯️ La Réserve</button>
-      <button id="btn-sound">🔔 Sons : oui</button>
-    </div>
-
-    <h2 class="section">Choisis ton épreuve</h2>
-    <div class="modes">
-
-      <button class="mode-card" data-mode="ascension">
-        <span class="mi">🌠</span>
-        <span class="mt">L'Ascension</span>
-        <span class="md">Le grand voyage : de la Première Année au Département des Mystères. 15 questions de plus en plus dures, 3 vies.</span>
-        <span class="badge">Mode principal</span>
-      </button>
-
-      <button class="mode-card" data-mode="daily" id="mode-daily">
-        <span class="mi">🌙</span>
-        <span class="mt">Le Défi du Jour</span>
-        <span class="md">5 questions tirées par les astres, les mêmes pour tout le monde aujourd'hui. Une seule tentative par jour !</span>
-        <span class="badge" id="daily-badge">Nouveau défi</span>
-      </button>
-
-      <button class="mode-card" data-mode="timed">
-        <span class="mi">⏳</span>
-        <span class="mt">Contre-la-Montre</span>
-        <span class="md">90 secondes au Retourneur de Temps. Enchaîne un maximum de bonnes réponses avant la fin du sable.</span>
-        <span class="badge" id="timed-best">Record : —</span>
-      </button>
-
-      <button class="mode-card" data-mode="sudden">
-        <span class="mi">💀</span>
-        <span class="mt">Mort Subite</span>
-        <span class="md">Une erreur et c'est l'Avada Kedavra. Jusqu'où iras-tu ? Les points doublent à chaque palier.</span>
-        <span class="badge" id="sudden-best">Record : —</span>
-      </button>
-
-      <button class="mode-card" data-mode="pensine">
-        <span class="mi">💭</span>
-        <span class="mt">La Pensine</span>
-        <span class="md">Replonge dans les sept tomes, un souvenir à la fois. Restaure chaque souvenir en argent… ou en Vif d'or.</span>
-        <span class="badge" id="pensine-badge">0/7 souvenirs</span>
-      </button>
-
-      <button class="mode-card" data-mode="gringotts">
-        <span class="mi">🐉</span>
-        <span class="mt">Le Coffre de Gringotts</span>
-        <span class="md">Quitte ou double : chaque bonne réponse double ton butin. Repars quand tu veux… mais un dragon sommeille au fond.</span>
-        <span class="badge" id="gringotts-best">Record : —</span>
-      </button>
-
-      <button class="mode-card" data-mode="practice">
-        <span class="mi">📚</span>
-        <span class="mt">La Bibliothèque</span>
-        <span class="md">Révisions libres, niveau par niveau, sans enjeu. Chaque réponse dévoile sa source dans les livres.</span>
-        <span class="badge">Sans pression</span>
-      </button>
-
-    </div>
-
-    <p class="footer-note">Canon strict des 7 romans — traduction de Jean-François Ménard.<br>
-    Chaque question cite son tome et son chapitre. Ni films, ni Pottermore, ni pièce de théâtre.</p>
-  </section>
-
-  <!-- ========== CHOIX DU NIVEAU (Bibliothèque) ========== -->
-  <section id="screen-practice" class="screen">
-    <h2 class="section">📚 La Bibliothèque</h2>
-    <div class="panel">
-      <p style="text-align:center; margin-bottom:12px;">Choisis ton rayon :</p>
-      <div class="modes" id="practice-tiers"></div>
-      <div class="btn-row"><button class="btn-ghost" data-nav="home">← Retour</button></div>
-    </div>
-  </section>
-
-  <!-- ========== QUIZ ========== -->
-  <section id="screen-quiz" class="screen">
-    <div class="quiz-head">
-      <div class="hud">
-        <span id="hud-mode">—</span>
-        <span id="hud-lives" class="lives"></span>
-        <span id="hud-timer" class="timer hidden">90</span>
+      <div class="card">
+        <h2>Données</h2>
+        <p class="muted">Tout est stocké sur ton appareil. Tu peux exporter/importer une sauvegarde.</p>
+        <div class="row-btns">
+          <button class="btn ghost" id="btn-export">Exporter</button>
+          <button class="btn ghost" id="btn-import">Importer</button>
+          <button class="btn danger" id="btn-reset">Tout effacer</button>
+        </div>
+        <input type="file" id="import-file" accept="application/json" hidden />
       </div>
-      <div class="hud">
-        <span id="hud-streak" class="streak-flame"></span>
-        <span>Session : <b id="hud-score">0</b> pts</span>
+    </section>
+  </div>
+
+  <!-- ================= BARRE DE NAVIGATION ================= -->
+  <nav class="tabbar">
+    <button data-nav="dash" class="active">
+      <span class="ic">▚</span><span>Accueil</span>
+    </button>
+    <button data-nav="train">
+      <span class="ic">🏋</span><span>Sport</span>
+    </button>
+    <button data-nav="nutri">
+      <span class="ic">🍽</span><span>Nutrition</span>
+    </button>
+    <button data-nav="profile">
+      <span class="ic">⚙</span><span>Profil</span>
+    </button>
+  </nav>
+
+  <!-- ================= MODALE GÉNÉRIQUE ================= -->
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <button class="btn ghost tiny" id="modal-close">✕</button>
       </div>
+      <div class="modal-body" id="modal-body"></div>
     </div>
+  </div>
 
-    <div class="progress-dots" id="quiz-dots"></div>
+  <div id="toast" class="toast" hidden></div>
 
-    <div class="tier-tag" id="quiz-tier">—</div>
-
-    <div class="qcard">
-      <div class="qtext" id="quiz-question">…</div>
-      <div class="answers" id="quiz-answers"></div>
-      <div class="feedback" id="quiz-feedback">
-        <div class="verdict" id="fb-verdict"></div>
-        <div class="source" id="fb-source"></div>
-        <div class="gain" id="fb-gain"></div>
-      </div>
-    </div>
-
-    <div class="btn-row">
-      <button id="btn-next" class="btn-gold hidden">Continuer →</button>
-      <button id="btn-vault-take" class="btn-gold hidden">💰 Repartir avec le butin</button>
-      <button id="btn-vault-risk" class="btn-ghost hidden">🐉 S'enfoncer plus profond…</button>
-      <button id="btn-quit" class="btn-ghost">Abandonner</button>
-    </div>
-  </section>
-
-  <!-- ========== LA PENSINE ========== -->
-  <section id="screen-pensine" class="screen">
-    <h2 class="section">💭 La Pensine</h2>
-    <p style="text-align:center; opacity:.8; font-size:.92rem; margin-bottom:14px;">
-      Penche-toi au-dessus de la bassine de pierre… Sept souvenirs t'attendent, un par tome.<br>
-      6 bonnes réponses sur 8 restaurent le souvenir en argent — un sans-faute le grave en Vif d'or.
-    </p>
-    <div class="modes" id="pensine-tomes"></div>
-    <div class="btn-row"><button class="btn-ghost" data-nav="home">← Retour</button></div>
-  </section>
-
-  <!-- ========== LA RÉSERVE ========== -->
-  <section id="screen-reserve" class="screen">
-    <h2 class="section">🕯️ La Réserve</h2>
-    <p class="reserve-intro">
-      <em>Minuit passé. Une lanterne, une cape d'invisibilité, et la chaîne qui garde la section interdite
-      cède sans un bruit… Ici, on quitte le canon strict des romans : ces grimoires murmurent le lore étendu
-      — Pottermore, interviews de J.K. Rowling — et les manuscrits recueillent les théories les plus
-      fascinantes jamais échangées entre fans. Chaque entrée est réelle et sourcée. Chut.</em>
-    </p>
-    <div class="btn-row" style="margin-bottom:14px;">
-      <button id="tab-facts" class="btn-gold">📚 Grimoires du lore étendu</button>
-      <button id="tab-theories" class="btn-ghost">🩸 Manuscrits interdits</button>
-    </div>
-    <div id="reserve-list"></div>
-    <div class="btn-row"><button class="btn-ghost" data-nav="home">← Refermer la Réserve</button></div>
-  </section>
-
-  <!-- ========== RÉSULTAT ========== -->
-  <section id="screen-result" class="screen">
-    <div class="panel">
-      <div class="result-big" id="res-emoji">✨</div>
-      <h2 class="section" id="res-title">—</h2>
-      <div class="result-score" id="res-score">—</div>
-      <div class="result-line" id="res-line1"></div>
-      <div class="result-line" id="res-line2"></div>
-      <div id="res-quests"></div>
-      <div class="btn-row">
-        <button id="btn-replay" class="btn-gold">Rejouer</button>
-        <button class="btn-ghost" data-nav="home">← Grande Salle</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========== QUÊTES ========== -->
-  <section id="screen-quests" class="screen">
-    <h2 class="section">📜 Le Parchemin des Quêtes</h2>
-    <div class="panel" id="quests-list"></div>
-    <div class="btn-row"><button class="btn-ghost" data-nav="home">← Retour</button></div>
-  </section>
-
-  <!-- ========== COUPE DES MAISONS ========== -->
-  <section id="screen-cup" class="screen">
-    <h2 class="section">🏆 La Coupe des Quatre Maisons</h2>
-    <div class="panel">
-      <p style="text-align:center; opacity:.8; font-size:.9rem; margin-bottom:10px;">
-        Chaque point gagné va à ta maison. Les autres maisons marquent aussi, semaine après semaine…
-      </p>
-      <div id="cup-rows"></div>
-      <p id="cup-verdict" style="text-align:center; margin-top:14px; color: var(--gold-bright);"></p>
-    </div>
-    <div class="btn-row"><button class="btn-ghost" data-nav="home">← Retour</button></div>
-  </section>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script src="js/questions.js?v=8"></script>
-<script src="js/reserve.js?v=8"></script>
-<script src="js/app.js?v=8"></script>
-<script>
-  /* Enregistrement du service worker (mode hors-ligne + installation) */
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
-    });
-  }
-</script>
+  <script src="js/coach.js?v=1"></script>
 </body>
 </html>
